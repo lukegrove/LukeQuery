@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LukeQuery")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3d901c2e31064d011e5962f4db230255e557de45")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8fd88eb2166fa0acd39be6d8cd5d6440c5329e2d")]
 [assembly: System.Reflection.AssemblyProductAttribute("LukeQuery")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LukeQuery")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
