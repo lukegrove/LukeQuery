@@ -1,11 +1,68 @@
 {
   "version": 3,
   "targets": {
-    "net10.0": {}
+    "net10.0": {
+      "Apache.Arrow/23.0.0": {
+        "type": "package",
+        "dependencies": {
+          "Apache.Arrow.Scalars": "23.0.0"
+        },
+        "compile": {
+          "lib/net8.0/Apache.Arrow.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/Apache.Arrow.dll": {}
+        }
+      },
+      "Apache.Arrow.Scalars/23.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/Apache.Arrow.Scalars.dll": {}
+        },
+        "runtime": {
+          "lib/net8.0/Apache.Arrow.Scalars.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "Apache.Arrow/23.0.0": {
+      "sha512": "cU4Zm7byFwnb82Ea9ZRvVnq2nJNf/TF9j+rj/MHlvu9RBYMqYtu4sJaR1JmMh3MmSIuwMafVg7PfJxPAMv9dGw==",
+      "type": "package",
+      "path": "apache.arrow/23.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "apache.arrow.23.0.0.nupkg.sha512",
+        "apache.arrow.nuspec",
+        "lib/net462/Apache.Arrow.dll",
+        "lib/net8.0/Apache.Arrow.dll",
+        "lib/netstandard2.0/Apache.Arrow.dll",
+        "logo_asf.png"
+      ]
+    },
+    "Apache.Arrow.Scalars/23.0.0": {
+      "sha512": "i53VmQ505ASXsStf7y29Z5qvhN6PGgFGNb6UUU7z1WmbzEgSjKQuIJkKKVbh+K5rtXRiKyr1Ah3Rmvbeb2BEHQ==",
+      "type": "package",
+      "path": "apache.arrow.scalars/23.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "apache.arrow.scalars.23.0.0.nupkg.sha512",
+        "apache.arrow.scalars.nuspec",
+        "lib/net462/Apache.Arrow.Scalars.dll",
+        "lib/net8.0/Apache.Arrow.Scalars.dll",
+        "lib/netstandard2.0/Apache.Arrow.Scalars.dll",
+        "logo_asf.png"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    "net10.0": []
+    "net10.0": [
+      "Apache.Arrow >= 23.0.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\lukeg\\.nuget\\packages\\": {}
@@ -49,6 +106,12 @@
     "frameworks": {
       "net10.0": {
         "targetAlias": "net10.0",
+        "dependencies": {
+          "Apache.Arrow": {
+            "target": "Package",
+            "version": "[23.0.0, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",
