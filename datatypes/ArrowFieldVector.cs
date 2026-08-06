@@ -2,59 +2,39 @@ using Apache.Arrow.Types;
 
 namespace LukeQuery.Datatypes;
 
-public class ArrowFieldVector : ColumnVector
+/// <summary>
+/// An ArrowFieldVector is a single column of data in a dataset, defined by a Field object.
+/// </summary>
+/// <param name="field">Field</param>
+public class ArrowFieldVector(Field field) : IColumnVector
 {
-    private readonly Field _field;
-    private readonly List<Field> _fields = [];
+    private readonly Field Field = field;
 
-    public ArrowFieldVector(Field field)
+    public new ArrowType GetType()
     {
-        _field = field;
-    }
-
-    public ArrowType getType()
-    {
-        // Does this need to depend on a list?
-        switch (_field.GetType().Name.ToLower())
+        return Field.GetType().Name.ToLower() switch
         {
-            case "bool":
-                return ArrowTypes.BooleanType;
-            case "int8":
-                return ArrowTypes.Int8Type;
-            case "int16":
-                return ArrowTypes.Int16Type;
-            case "int32":
-                return ArrowTypes.Int32Type;
-            case "int64":
-                return ArrowTypes.Int64Type;
-            case "uint8":
-                return ArrowTypes.UInt8Type;
-            case "uint16":
-                return ArrowTypes.UInt16Type;
-            case "uint32":
-                return ArrowTypes.UInt32Type;
-            case "uint64":
-                return ArrowTypes.UInt64Type;
-            case "float":
-                return ArrowTypes.FloatType;
-            case "double":
-                return ArrowTypes.DoubleType;
-            case "string":
-                return ArrowTypes.StringType;
-            case "binary":
-                return ArrowTypes.BinaryType;
-            case "date32":
-                return ArrowTypes.DateDayType;
-            case "interval_day_time":
-                return ArrowTypes.IntervalDayTimeType;
-            default:
-                throw new NotImplementedException($"Arrow type for field '{_field}' is not implemented.");
-        }
+            "bool"  => ArrowTypes.BooleanType,
+            "int8"  => ArrowTypes.Int8Type,
+            "int16" => ArrowTypes.Int16Type,
+            "int32" => ArrowTypes.Int32Type,
+            "int64" => ArrowTypes.Int64Type,
+            "uint8" => ArrowTypes.UInt8Type,
+            "uint16" => ArrowTypes.UInt16Type,
+            "uint32" => ArrowTypes.UInt32Type,
+            "uint64" => ArrowTypes.UInt64Type,
+            "float" => ArrowTypes.FloatType,
+            "double" => ArrowTypes.DoubleType,
+            "string" => ArrowTypes.StringType,
+            "binary" => ArrowTypes.BinaryType,
+            "date32" => ArrowTypes.DateDayType,
+            "interval_day_time" => ArrowTypes.IntervalDayTimeType,
+            _ => throw new NotImplementedException($"Arrow type for field '{Field}' is not implemented."),
+        };
     }
 
-    public ArrowType getValue(int i)
+    /*public ArrowType getValue(int i)
     {
-        // Does this need to depend on a list?
         if (i >= 0)
         {
             return _fields[i].Type;
@@ -65,9 +45,8 @@ public class ArrowFieldVector : ColumnVector
         }
     }
 
-    public int size()
+    public int Size()
     {
-        // Does this need to depend on a list?
         return _fields.Count;
-    }
+    }*/
 }

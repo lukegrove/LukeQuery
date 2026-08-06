@@ -2,27 +2,26 @@ using Apache.Arrow.Types;
 
 namespace LukeQuery.Datatypes;
 
-public class LiteralValueVector : ColumnVector
+/// <summary>
+/// A LiteralValueVector is a column vector that contains a single literal value repeated for by the size.
+/// </summary>
+/// <param name="arrowType">ArrowType</param>
+/// <param name="value">double</param>
+/// <param name="size">int</param>
+public class LiteralValueVector(ArrowType arrowType, double value, int size) : IColumnVector
 {
-    public ArrowType ArrowType { get; }
-    public double Value { get; }
-    public int Size { get; }
+    public ArrowType ArrowType { get; } = arrowType;
+    public double Value { get; } = value;
+    public int VectorSize { get; } = size;
 
-    public LiteralValueVector(ArrowType arrowType, double value, int size)
-    {
-        ArrowType = arrowType;
-        Value = value;
-        Size = size;
-    }
-
-    public ArrowType getType()
+    public new ArrowType GetType()
     {
         return ArrowType;
     }
 
-    public ArrowType getValue(int i)
+    public ArrowType GetValue(int i)
     {
-        if (i < 0 || i >= Size)
+        if (i < 0 || i >= VectorSize)
         {
             throw new IndexOutOfRangeException($"Index {i} is out of range for LiteralValueVector of size {Size}.");
         }
@@ -32,8 +31,8 @@ public class LiteralValueVector : ColumnVector
         }
     }
 
-    public int size()
+    public int Size()
     {
-        return Size;
+        return VectorSize;
     }
 }
