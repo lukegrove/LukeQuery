@@ -1,3 +1,4 @@
 bin
 bin/Debug/net10.0
 obj
+.DS_Store
