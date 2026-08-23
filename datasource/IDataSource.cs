@@ -12,7 +12,8 @@ interface IDataSource
         throw new NotImplementedException();
     }
 
-    public IEnumerable<RecordBatch> Scan(List<String> columns)
+    // A projection here refers to a search for column names, as opposed to a filter for row values.
+    public IEnumerable<RecordBatch> Scan(List<String> projection)
     {
         throw new NotImplementedException();
     }

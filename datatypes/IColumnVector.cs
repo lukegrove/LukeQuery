@@ -12,7 +12,12 @@ public interface IColumnVector
         throw new NotImplementedException();
     }
 
-    public ArrowType GetValue(int i)
+    public string GetValue(int i)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void AddValue(string value)
     {
         throw new NotImplementedException();
     }

@@ -6,10 +6,15 @@ namespace LukeQuery.Datatypes;
 /// An ArrowFieldVector is a single column of data in a dataset, defined by a Field object.
 /// </summary>
 /// <param name="field">Field</param>
-public class ArrowFieldVector(Field field) : IColumnVector
+public class ArrowFieldVector(Field field, List<string> values) : IColumnVector
 {
     private readonly Field Field = field;
+    public List<string> Values = values;
 
+    /// <summary>
+    /// Returns the vector type.
+    /// </summary>
+    /// <returns>ArrowType</returns>
     public new ArrowType GetType()
     {
         return Field.GetType().Name.ToLower() switch
@@ -33,20 +38,27 @@ public class ArrowFieldVector(Field field) : IColumnVector
         };
     }
 
-    /*public ArrowType getValue(int i)
+    /// <summary>
+    /// Gets the value of the vector at the index.
+    /// </summary>
+    /// <param name="i">Index</param>
+    /// <returns>string</returns>
+    public string GetValue(int i)
     {
-        if (i >= 0)
-        {
-            return _fields[i].Type;
-        }
-        else
-        {
-            throw new IndexOutOfRangeException($"Index {i} is out of range for ArrowFieldVector.");
-        }
+        return Values.ElementAt(i);
     }
 
+    public void AddValue(string value)
+    {
+        Values.Add(value);
+    }
+
+    /// <summary>
+    /// Returns the size of the vector.
+    /// </summary>
+    /// <returns>int</returns>
     public int Size()
     {
-        return _fields.Count;
-    }*/
+        return Values.Count;
+    }
 }
