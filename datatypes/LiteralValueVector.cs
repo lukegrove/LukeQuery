@@ -8,18 +8,27 @@ namespace LukeQuery.Datatypes;
 /// <param name="arrowType">ArrowType</param>
 /// <param name="value">double</param>
 /// <param name="size">int</param>
-public class LiteralValueVector(ArrowType arrowType, string value, int size) : IColumnVector
+public class LiteralValueVector<T>(ArrowType arrowType, T value, int size) : IColumnVector
 {
     public ArrowType ArrowType { get; } = arrowType;
-    public string Value { get; } = value;
+    public T Value { get; } = value;
     public int VectorSize { get; } = size;
 
+    /// <summary>
+    /// Returns the vector type.
+    /// </summary>
+    /// <returns>ArrowType</returns>
     public new ArrowType GetType()
     {
         return ArrowType;
     }
 
-    public string GetValue(int i)
+    /// <summary>
+    /// Gets the value of the vector at the index.
+    /// </summary>
+    /// <param name="i">Index</param>
+    /// <returns>string</returns>
+    public object GetValue(int i)
     {
         if (i < 0 || i >= VectorSize)
         {
@@ -27,10 +36,14 @@ public class LiteralValueVector(ArrowType arrowType, string value, int size) : I
         }
         else
         {
-            return Value;
+            return Value!;
         }
     }
 
+    /// <summary>
+    /// Returns the size of the vector.
+    /// </summary>
+    /// <returns>int</returns>
     public int Size()
     {
         return VectorSize;
