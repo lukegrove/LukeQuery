@@ -12,12 +12,22 @@ public interface IColumnVector
         throw new NotImplementedException();
     }
 
-    public string GetValue(int i)
+    public object GetValue(int i)
     {
         throw new NotImplementedException();
     }
 
-    public void AddValue(string value)
+    public void AddValue(object value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetValue(int i, object value)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void SetNull(int i)
     {
         throw new NotImplementedException();
     }

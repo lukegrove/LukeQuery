@@ -31,11 +31,11 @@ public class RecordBatch(Schema schema, List<IColumnVector> columnVectors)
     /// Returns the contents of the record batch as a string in CSV format.
     /// </summary>
     /// <returns>string</returns>
-    public override string ToString()
+    public string ToCSV()
     {
         string str = "";
 
-        foreach (Field field in schema.Fields)
+        foreach (Field field in Schema.Fields)
         {
             str += field.Name + ",";
         }

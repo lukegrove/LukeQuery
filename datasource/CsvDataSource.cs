@@ -1,16 +1,27 @@
 using LukeQuery.Datatypes;
-using Microsoft.VisualBasic.FileIO;
-using System.IO;
+using CsvHelper;
+using System.Globalization;
+using CsvHelper.Configuration;
 
 namespace LukeQuery.DataSource;
 
-class CsvDataSource: IDataSource
+/// <summary>
+/// Comma seperated value data source.
+/// </summary>
+public class CsvDataSource: IDataSource
 {
-    public string Filename;
-    public Schema Schema;
+    private readonly string Filename;
+    private readonly Schema Schema;
     private readonly bool HasHeaders;
     private readonly int BatchSize;
 
+    /// <summary>
+    /// Class constructor for CSV datasources. Will infer schema if one is not provided.
+    /// </summary>
+    /// <param name="filename">Filename or path.</param>
+    /// <param name="hasHeaders">Does the file have headers?</param>
+    /// <param name="batchSize">The number of batches to parse.</param>
+    /// <param name="schema">Optional schema.</param>
     public CsvDataSource(string filename, bool hasHeaders, int batchSize, Schema? schema = null)
     {
         Filename = filename;
@@ -19,102 +30,150 @@ class CsvDataSource: IDataSource
         Schema = schema ?? InferSchema();
     }
 
-    public Schema InferSchema()
+    /// <summary>
+    /// Validates that the file used in the constructor is valid.
+    /// </summary>
+    public void ValidateFile()
     {
-        List<Field> fields = [];
-
         if (!File.Exists(Filename))
         {
             throw new FileNotFoundException(Filename);
         }
+    }
 
-        TextFieldParser parser = new(Filename)
+    /// <summary>
+    /// Creates a CSV Reader object.
+    /// </summary>
+    /// <returns>CsvReader</returns>
+    public CsvReader CreateCSVReader()
+    {
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
-            TextFieldType = FieldType.Delimited
+            HasHeaderRecord = HasHeaders,
         };
-        parser.SetDelimiters(",");
+        var reader = new StreamReader(Filename);
+        var csv = new CsvReader(reader, config);
 
-        string[] headers = parser.ReadFields() ?? [];
-        
+        return csv;
+    }
+
+    /// <summary>
+    /// Infers the schema for the datasource if one is not provided.
+    /// </summary>
+    /// <returns>Schema</returns>
+    public Schema InferSchema()
+    {
+        List<Field> fields = [];
+        string[] headers;
+
+        ValidateFile();
+
+        var csv = CreateCSVReader();
+        csv.Read();
+
         if (HasHeaders)
         {
+            csv.ReadHeader();
+            headers = csv.HeaderRecord ?? [];
+            csv.Read();
+
+            int i = 0;
             foreach (string header in headers)
             {
-                fields.Add(new Field(header, ArrowTypes.StringType));
+                fields.Add(new Field(header, FieldTypeParser.InferType(csv.GetField(i))));
+                i++;
             }
         }
         else
         {
-            int i = 0;
-            foreach (string header in headers)
+            csv.Read();
+
+            for (int i = 0; i < csv.ColumnCount-1; i++)
             {
-                Field f = new($"field_{i}", ArrowTypes.StringType);
-                fields.Add(f);
-                i++;
+                fields.Add(new Field($"field_{i}", FieldTypeParser.InferType(csv.GetField(i))));
             }
         }
 
         return new Schema(fields);
     }
 
-    public IEnumerable<RecordBatch> Scan(List<String>? projection)
+    /// <summary>
+    /// Reads the projection for the schema.
+    /// </summary>
+    /// <param name="projection">Projection list.</param>
+    /// <returns>Schema</returns>
+    public Schema ReadProjection(List<string> projection)
     {
-        IEnumerable<RecordBatch> recordBatches = [];
-        List<IColumnVector> columnVectors = [];
-        Schema readSchema;
-        List<String> readProjection = projection ?? [];
+        List<string> readProjection = projection ?? [];
+        Schema schema;
 
-        if (!File.Exists(Filename))
-        {
-            throw new FileNotFoundException(Filename);
-        }
-        
         if (readProjection.Count != 0)
         {
-            readSchema = Schema.Select(readProjection);
+            schema = Schema.Select(readProjection);
         }
         else
         {
-            readSchema = Schema;
+            schema = Schema;
         }
 
-        TextFieldParser parser = new(Filename)
-        {
-            TextFieldType = FieldType.Delimited
-        };
-        parser.SetDelimiters(",");
-        string[] values;
+        return schema;
+    }
+
+    /// <summary>
+    /// Scans the datasource for the specified projection, and returns a batch-size list of record batches.
+    /// </summary>
+    /// <param name="projection">Projection list.</param>
+    /// <returns>RecordBatch enumerator.</returns>
+    public IEnumerable<RecordBatch> Scan(List<string>? projection)
+    {
+        ValidateFile();
+        
+        Schema projSchema = ReadProjection(projection ?? []);
+
+        List<IColumnVector> columnVectors = [];
+        IEnumerable<RecordBatch> recordBatches = [];
+        VectorFactory vectorFactory;
+
+        var csv = CreateCSVReader();
+        int batchCounter = 0;
+
+        csv.Read();
 
         if (HasHeaders)
         {
-            values = parser.ReadFields() ?? [];
+            csv.ReadHeader();
         }
 
-        int row = 1;
-        while (!parser.EndOfData)
+        while (csv.Read())
         {
-            foreach (Field field in readSchema.Fields)
+            if (batchCounter == BatchSize-1)
             {
-                columnVectors.Add(new ArrowFieldVector(field, []));
+                recordBatches = recordBatches.Append(new RecordBatch(projSchema, [.. columnVectors]));
+                columnVectors.Clear();
+                batchCounter = 0;
             }
 
-            for (int j = 0; j <= BatchSize - 1; j++)
-            {                
-                values = parser.ReadFields() ?? [];
-                if (values.Count() != 0)
+            if (batchCounter == 0)
+            {
+                foreach (Field field in projSchema.Fields)
                 {
-                    for (int i = 0; i <= readSchema.FieldCount() - 1; i++)
-                    {
-                        columnVectors[i].AddValue(values[i]);
-                    }
+                    vectorFactory = new(field);
+                    columnVectors.Add(vectorFactory.CreateFieldVector());
                 }
-
-                row++;
             }
 
-            recordBatches = recordBatches.Append(new RecordBatch(readSchema, [.. columnVectors]));
-            columnVectors.Clear();
+            int i = 0;
+
+            foreach (Field field in projSchema.Fields)
+            {
+                columnVectors[i].AddValue(csv.GetField(i) ?? "");
+                i++;
+            }
+
+            batchCounter++;
         }
+
+        recordBatches = recordBatches.Append(new RecordBatch(projSchema, [.. columnVectors]));
 
         return recordBatches;
     }

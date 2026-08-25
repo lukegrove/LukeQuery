@@ -4,6 +4,7 @@ namespace LukeQuery.Datatypes;
 
 public static class ArrowTypes
 {
+    public static readonly NullType NullType = NullType.Default;
     public static readonly BooleanType BooleanType = Apache.Arrow.Types.BooleanType.Default;
     public static readonly Int8Type Int8Type = Apache.Arrow.Types.Int8Type.Default;
     public static readonly Int16Type Int16Type = Apache.Arrow.Types.Int16Type.Default;
