@@ -13,7 +13,7 @@ namespace LukeQuery.LogicalPlan;
 public class Scan(string path, IDataSource dataSource, List<string> projection): ILogicalPlan
 {
     /// <summary>
-    /// Returns the Schema.
+    /// Returns the schema.
     /// </summary>
     /// <returns>Schema</returns>
     public Schema Schema()

@@ -8,9 +8,9 @@ namespace LukeQuery.LogicalPlan;
 public interface ILogicalExpr
 {
     /// <summary>
-    /// Returns name and data type of the expression's output
+    /// Returns name and data type of the expression's output.
     /// </summary>
-    /// <param name="input">ILogicalPlan</param>
+    /// <param name="input">Input plan</param>
     /// <returns>Field</returns>
     public Field ToField(ILogicalPlan input);
 }

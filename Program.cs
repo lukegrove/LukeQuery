@@ -26,7 +26,9 @@ internal static class Program
         Console.WriteLine(scan.ToString());
 
         LiteralString engineering = new("Engineering");
-        Selection filter = new(scan, new Eq(new Column("department"), engineering));
+        Column column = new Column("department");
+        Eq eq = new Eq(column, engineering);
+        Selection filter = new(scan, eq);
         Console.WriteLine(filter.ToString());
 
         LiteralDouble salary = new(1.1);
