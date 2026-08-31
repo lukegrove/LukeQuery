@@ -19,25 +19,23 @@ public interface ILogicalPlan
     /// Used for the visitor pattern to walk down the tree.
     /// A scan has no children (reads from DS), a filter has one (input), a join has two (left, right).
     /// </summary>
-    /// <returns></returns>
+    /// <returns>List of children</returns>
     public List<ILogicalPlan> Children();
     
     /// <summary>
     /// Returns a pretty version of the plan.
     /// </summary>
-    /// <returns>string</returns>
+    /// <returns>A very pretty string.</returns>
     public string Pretty()
     {
         return Format(this);
     }
 
-    // TODO: move Format to a different class ???
-
     /// <summary>
     /// Formats the logical plan into a readable form.
     /// </summary>
-    /// <param name="plan">ILogicalPlan</param>
-    /// <param name="indent">int</param>
+    /// <param name="plan">Input plan.</param>
+    /// <param name="indent">The amount of indentation.</param>
     /// <returns>Formatted string</returns>
     public string Format(ILogicalPlan plan, int indent = 0)
     {

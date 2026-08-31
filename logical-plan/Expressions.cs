@@ -3,12 +3,12 @@ using LukeQuery.Datatypes;
 
 namespace LukeQuery.LogicalPlan;
 
-// TODO: Convenience methods? Maybe a different factory class for that
+// TODO: Add other literals Date/Interval/DateAdd/DateSubtract
 
 /// <summary>
 /// Expression representing a reference to a column by name.
 /// </summary>
-/// <param name="name">string</param>
+/// <param name="name">Column name.</param>
 public class Column(string name) : ILogicalExpr
 {
     private readonly string Name = name;
@@ -54,7 +54,7 @@ public class LiteralString(string literal) : ILogicalExpr
 
 /// <summary>
 /// Expression representing a literal long.
-/// Does not depend in input as the type is fixed.
+/// Does not depend on input as the type is fixed.
 /// </summary>
 /// <param name="long">literal</param>
 public class LiteralLong(long literal) : ILogicalExpr
@@ -92,8 +92,6 @@ public class LiteralDouble(double literal) : ILogicalExpr
     }
 }
 
-// TODO: Add other literals Date/Interval/DateAdd/DateSubtract
-
 /// <summary>
 /// Shared structure for input comparison.
 /// </summary>
@@ -103,6 +101,8 @@ public class LiteralDouble(double literal) : ILogicalExpr
 /// <param name="right">Right operand.</param>
 public abstract class BinaryExpr(string name, string op, ILogicalExpr left, ILogicalExpr right) : ILogicalExpr
 {
+    private readonly string Name = name;
+
     public override string ToString()
     {
         return $"{left} {op} {right}";
@@ -123,7 +123,8 @@ public abstract class BinaryExpr(string name, string op, ILogicalExpr left, ILog
 /// <param name="right">Right operand.</param>
 public abstract class BooleanBinaryExpr(string name, string op, ILogicalExpr left, ILogicalExpr right) : BinaryExpr(name, op, left, right)
 {
-    // Override?
+    private readonly string name = name;
+
     public new Field ToField(ILogicalPlan input)
     {
         return new Field(name, ArrowTypes.BooleanType);
@@ -195,9 +196,12 @@ public class Or(ILogicalExpr left, ILogicalExpr right) : BooleanBinaryExpr("or",
 /// <param name="right">Right operand.</param>
 public abstract class MathExpr(string name, string op, ILogicalExpr left, ILogicalExpr right) : BinaryExpr(name, op, left, right)
 {
+    private readonly string Name = name;
+    private readonly ILogicalExpr Left = left;
+
     public new Field ToField(ILogicalPlan input)
     {
-        return new Field(name, left.ToField(input).Type);
+        return new Field(Name, Left.ToField(input).Type);
     }
 }
 
@@ -284,14 +288,16 @@ public class Avg(ILogicalExpr input) : AggregateExpr("AVG", input) {}
 /// <param name="input">Input expression.</param>
 public class Count(ILogicalExpr input) : AggregateExpr("COUNT", input)
 {
-    public Field ToField(ILogicalPlan input)
+    private readonly ILogicalExpr Input = input;
+
+    public new Field ToField(ILogicalPlan input)
     {
         return new Field("COUNT", ArrowTypes.Int32Type);
     }
 
     public override string ToString()
     {
-        return $"COUNT({input})";
+        return $"COUNT({Input})";
     }
 }
 
