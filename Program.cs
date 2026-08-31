@@ -9,35 +9,17 @@ internal static class Program
         Console.WriteLine("Hello from LukeQuery!");
         
         string path = "/Users/lukegrove/Desktop/LukeQueryCSV.txt";
-        CsvDataSource ds = new(path, false, 4);
-
-        /*IEnumerable<RecordBatch> recordBatches = ds.Scan([]);//["id", "name", "department", "salary"]);
-        
-        foreach (RecordBatch rb in recordBatches)
-        {
-            Console.WriteLine("==>> NEW BATCH");
-            Console.WriteLine($"Record batch has {rb.RowCount()} rows and {rb.ColumnCount()} columns.");
-            Console.WriteLine($"{rb.ToCSV()}");
-        }*/
 
         //SELECT name, salary * 1.1 AS new_salary FROM employees WHERE department = 'Engineering'
 
-        Scan scan = new(path, ds, []);
-        Console.WriteLine(scan.ToString());
-
-        LiteralString engineering = new("Engineering");
-        Column column = new Column("department");
-        Eq eq = new Eq(column, engineering);
-        Selection filter = new(scan, eq);
-        Console.WriteLine(filter.ToString());
-
-        LiteralDouble salary = new(1.1);
-        List<ILogicalExpr> projectionExprs = new() // C# collection initializer
+        var df = LukeQuery.Execution.ExecutionContext.CSV(path, true, 4)
+        .Filter(new Eq(new Column("department"), new LiteralString("Engineering")))
+        .Project(new List<ILogicalExpr>
         {
             new Column("name"),
-            new Alias(new Multiply(new Column("salary"), salary), "new_salary")
-        };
-        Projection projection = new(filter, projectionExprs);
-        Console.WriteLine(projection.ToString());
+            new Alias(new Multiply(new Column("salary"), new LiteralDouble(1.1)), "new_salary")
+        });
+
+        Console.WriteLine(df.LogicalPlan().Pretty());
     }
 }
