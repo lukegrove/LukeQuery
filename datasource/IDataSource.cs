@@ -5,7 +5,7 @@ namespace LukeQuery.DataSource;
 /// <summary>
 /// Interface for data sources.
 /// </summary>
-interface IDataSource
+public interface IDataSource
 {
     public Schema Schema()
     {

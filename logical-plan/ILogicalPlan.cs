@@ -12,10 +12,7 @@ public interface ILogicalPlan
     /// Returns schema of the dataset produced by the plan.
     /// </summary>
     /// <returns>Schema</returns>
-    public Schema Schema()
-    {
-        throw new NotImplementedException();
-    }
+    public Schema Schema();
 
     /// <summary>
     /// Returns the children (inputs) of the plan.
@@ -23,11 +20,8 @@ public interface ILogicalPlan
     /// A scan has no children (reads from DS), a filter has one (input), a join has two (left, right).
     /// </summary>
     /// <returns></returns>
-    public List<ILogicalPlan> Children()
-    {
-        throw new NotImplementedException();
-    }
-
+    public List<ILogicalPlan> Children();
+    
     /// <summary>
     /// Returns a pretty version of the plan.
     /// </summary>

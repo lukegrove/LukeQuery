@@ -10,7 +10,7 @@ public interface ILogicalExpr
     /// <summary>
     /// Returns name and data type of the expression's output
     /// </summary>
-    /// <param name="plan">ILogicalPlan</param>
+    /// <param name="input">ILogicalPlan</param>
     /// <returns>Field</returns>
-    public abstract Field ToField(ILogicalPlan plan);
+    public Field ToField(ILogicalPlan input);
 }

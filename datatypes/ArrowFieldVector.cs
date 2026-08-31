@@ -1,5 +1,4 @@
 using Apache.Arrow.Types;
-using LukeQuery.DataTypes;
 
 namespace LukeQuery.Datatypes;
 
