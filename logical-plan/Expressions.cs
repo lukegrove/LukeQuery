@@ -124,7 +124,7 @@ public abstract class BinaryExpr(string name, string op, ILogicalExpr left, ILog
 public abstract class BooleanBinaryExpr(string name, string op, ILogicalExpr left, ILogicalExpr right) : BinaryExpr(name, op, left, right)
 {
     // Override?
-    public Field ToField()
+    public new Field ToField(ILogicalPlan input)
     {
         return new Field(name, ArrowTypes.BooleanType);
     }
@@ -195,7 +195,7 @@ public class Or(ILogicalExpr left, ILogicalExpr right) : BooleanBinaryExpr("or",
 /// <param name="right">Right operand.</param>
 public abstract class MathExpr(string name, string op, ILogicalExpr left, ILogicalExpr right) : BinaryExpr(name, op, left, right)
 {
-    public Field ToField(ILogicalPlan input)
+    public new Field ToField(ILogicalPlan input)
     {
         return new Field(name, left.ToField(input).Type);
     }

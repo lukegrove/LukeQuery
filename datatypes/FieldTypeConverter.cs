@@ -1,6 +1,6 @@
 using Apache.Arrow.Types;
 
-namespace LukeQuery.DataTypes;
+namespace LukeQuery.Datatypes;
 
 /// <summary>
 /// Helper class for converting values to objects.
